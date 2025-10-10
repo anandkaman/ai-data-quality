@@ -1,10 +1,3 @@
-Perfect! Let me create both comprehensive documents.
-
-## 1. Architecture Documentation
-
-**docs/architecture.md**
-
-```markdown
 # AI Data Quality Guardian - Architecture Documentation
 
 ## System Overview
