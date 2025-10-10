@@ -810,5 +810,5 @@ MIT License - Build upon this foundation freely.
 
 **Built with ❤️ as a demonstration of AI-orchestrated architecture.**
 ```markdown
-*"The best way to predict the future is to invent it."* — Alan Kay
+<h>"The best way to predict the future is to invent it."<h> — Alan Kay
 ```
