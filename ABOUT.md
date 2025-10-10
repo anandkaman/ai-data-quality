@@ -809,11 +809,11 @@ MIT License - Build upon this foundation freely.
 ---
 
 **Built with ❤️ as a demonstration of AI-orchestrated architecture.**
-```markdown
-<h>"The best way to predict the future is to invent it."<h> — Alan Kay
-```
 
 <blockquote>
   <p><em>"The best way to predict the future is to invent it."</em></p>
   <p><strong>— Alan Kay</strong></p>
 </blockquote>
+
+> *"kamananand98@gmail.com"*  
+> — **anandkaman**
