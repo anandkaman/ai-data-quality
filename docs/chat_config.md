@@ -112,7 +112,7 @@ max_tokens: int = 2000
 ```
 
 **Temperature Guide:**
-```
+
 | Value | Creativity | Consistency | Use Case |
 |-------|------------|-------------|----------|
 | 0.1 - 0.3 | Low | High | Technical docs, code |
@@ -120,7 +120,7 @@ max_tokens: int = 2000
 | 0.7 - 0.8 | Medium | Balanced | General chat |
 | 0.9 - 1.0 | High | Variable | Creative writing |
 | 1.0+ | Very High | Low | Brainstorming |
-```
+
 **Example - Deterministic:**
 ```bash
 temperature: float = 0.9 # More varied, creative responses
@@ -136,7 +136,7 @@ max_tokens: int = 2000 # ← CHANGE THIS
 ```
 
 **Token Guide:**
-```bash
+
 | Tokens | ~Words | Use Case |
 |--------|--------|----------|
 | 500 | ~375 | Short answers |
@@ -144,7 +144,7 @@ max_tokens: int = 2000 # ← CHANGE THIS
 | 2000 | ~1500 | Detailed responses |
 | 4000 | ~3000 | Long documents |
 | 8000+ | ~6000+ | Essays, reports |
-```
+
 
 **Note:** More tokens = slower response + more memory
 
@@ -404,7 +404,7 @@ async def export_chat(session_id: int, db: Session = Depends(get_db)):
 ---
 
 ## Quick Reference
-```bash
+
 | Configuration | File | Line | Default | Range |
 |--------------|------|------|---------|-------|
 | Context Window | chat.py | ~48 | 20 | 5-100 |
@@ -412,7 +412,7 @@ async def export_chat(session_id: int, db: Session = Depends(get_db)):
 | Max Tokens | ollama_client.py | ~21 | 2000 | 100-8000 |
 | Model | .env | - | gemma2:2b | Any Ollama model |
 | Timeout | .env | - | 120s | 30-300s |
-```
+
 
 ***
 
