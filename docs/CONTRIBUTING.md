@@ -6,40 +6,16 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 ## Table of Contents
 
-1. [Code of Conduct](#code-of-conduct)
-2. [Getting Started](#getting-started)
-3. [Development Setup](#development-setup)
-4. [Project Structure](#project-structure)
-5. [Making Changes](#making-changes)
-6. [Coding Standards](#coding-standards)
-7. [Testing](#testing)
-8. [Submitting Changes](#submitting-changes)
-9. [Areas for Contribution](#areas-for-contribution)
+1. [Getting Started](#getting-started)
+2. [Development Setup](#development-setup)
+3. [Project Structure](#project-structure)
+4. [Making Changes](#making-changes)
+5. [Coding Standards](#coding-standards)
+6. [Testing](#testing)
+7. [Submitting Changes](#submitting-changes)
+8. [Areas for Contribution](#areas-for-contribution)
 
 ---
-
-## Code of Conduct
-
-### Our Pledge
-
-We pledge to make participation in our project a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
-
-### Our Standards
-
-**Positive Behavior:**
--  Using welcoming and inclusive language
--  Being respectful of differing viewpoints
--  Gracefully accepting constructive criticism
--  Focusing on what is best for the community
-
-**Unacceptable Behavior:**
-- Trolling, insulting/derogatory comments
--  Public or private harassment
--  Publishing others' private information
--  Other unprofessional conduct
-
----
-
 ## Getting Started
 
 ### Prerequisites
