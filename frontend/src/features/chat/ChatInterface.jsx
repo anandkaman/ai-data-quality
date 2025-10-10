@@ -3,6 +3,7 @@ import { Send, Trash2, Copy, Plus, MessageSquare, User, Bot, Check } from 'lucid
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
+import ModelSwitcher from './ModelSwitcher';
 
 const ChatInterface = () => {
   const [chats, setChats] = useState([]);
@@ -15,6 +16,7 @@ const ChatInterface = () => {
   const [editingChatId, setEditingChatId] = useState(null);
   const [editingName, setEditingName] = useState('');
   const [initializing, setInitializing] = useState(true);
+  const [currentModel, setCurrentModel] = useState('gemma2:2b');
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -224,6 +226,11 @@ const ChatInterface = () => {
     }
   };
 
+  const handleModelChange = (newModel) => {
+    setCurrentModel(newModel);
+    console.log('Model changed to:', newModel);
+  };
+
   const markdownComponents = useMemo(() => ({
     code({node, inline, className, children, ...props}) {
       return inline ? (
@@ -268,197 +275,213 @@ const ChatInterface = () => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-16rem)] gap-4">
-      {/* Sidebar */}
-      <div className="w-64 bg-white rounded-lg shadow-md p-4 flex flex-col">
-        <button
-          onClick={addNewChat}
-          className="btn btn-primary mb-4 flex items-center justify-center space-x-2 hover:scale-105 transition-transform"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Chat</span>
-        </button>
-
-        <div className="flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-300">
-          {chats.map(chat => (
-            <div
-              key={chat.id}
-              className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${
-                activeChat === chat.id
-                  ? 'bg-primary-50 border border-primary-200 shadow-sm'
-                  : 'hover:bg-gray-50 border border-transparent'
-              }`}
-              onClick={() => setActiveChat(chat.id)}
-            >
-              <div className="flex items-center space-x-2 flex-1 min-w-0">
-                <MessageSquare className="w-4 h-4 flex-shrink-0 text-gray-600" />
-                {editingChatId === chat.id ? (
-                  <input
-                    type="text"
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    onBlur={() => finishEditing(chat.id)}
-                    onKeyPress={(e) => e.key === 'Enter' && finishEditing(chat.id)}
-                    className="text-sm flex-1 px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                    autoFocus
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                ) : (
-                  <span className="text-sm truncate">{chat.name}</span>
-                )}
-              </div>
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    startEditing(chat);
-                  }}
-                  className="p-1 hover:bg-blue-100 rounded transition-colors"
-                  title="Rename"
-                >
-                  <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
-                {chats.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteChat(chat.id);
-                    }}
-                    className="p-1 hover:bg-red-100 rounded transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-3 h-3 text-red-600" />
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+    <div className="space-y-4">
+      {/* Header with Model Switcher */}
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Chat with AI</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Ask questions about data quality, data science, or get help with your analysis
+            </p>
+          </div>
+          <ModelSwitcher onModelChange={handleModelChange} />
         </div>
       </div>
 
-      {/* Chat area */}
-      <div className="flex-1 bg-white rounded-lg shadow-md flex flex-col">
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-300">
-          {messages.length === 0 && !streamingMessage ? (
-            <div className="h-full flex items-center justify-center text-gray-400">
-              <div className="text-center">
-                <Bot className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg">Start a conversation with Gemma 2:2b</p>
-                <p className="text-sm mt-2">Ask anything about data quality or data science</p>
+      {/* Main Chat Interface */}
+      <div className="flex h-[calc(100vh-12rem)] gap-4">
+        {/* Sidebar */}
+        <div className="w-64 bg-white rounded-lg shadow-md p-4 flex flex-col">
+          <button
+            onClick={addNewChat}
+            className="btn btn-primary mb-4 flex items-center justify-center space-x-2 hover:scale-105 transition-transform"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Chat</span>
+          </button>
+
+          <div className="flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-300">
+            {chats.map(chat => (
+              <div
+                key={chat.id}
+                className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${
+                  activeChat === chat.id
+                    ? 'bg-primary-50 border border-primary-200 shadow-sm'
+                    : 'hover:bg-gray-50 border border-transparent'
+                }`}
+                onClick={() => setActiveChat(chat.id)}
+              >
+                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                  <MessageSquare className="w-4 h-4 flex-shrink-0 text-gray-600" />
+                  {editingChatId === chat.id ? (
+                    <input
+                      type="text"
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onBlur={() => finishEditing(chat.id)}
+                      onKeyPress={(e) => e.key === 'Enter' && finishEditing(chat.id)}
+                      className="text-sm flex-1 px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <span className="text-sm truncate">{chat.name}</span>
+                  )}
+                </div>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditing(chat);
+                    }}
+                    className="p-1 hover:bg-blue-100 rounded transition-colors"
+                    title="Rename"
+                  >
+                    <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                  {chats.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteChat(chat.id);
+                      }}
+                      className="p-1 hover:bg-red-100 rounded transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-3 h-3 text-red-600" />
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <>
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group`}
-                >
-                  <div className={`flex space-x-3 max-w-3xl ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      msg.role === 'user' ? 'bg-primary-600' : 'bg-gray-600'
-                    }`}>
-                      {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
-                    </div>
-                    
-                    <div className={`flex-1 p-4 rounded-lg shadow-sm ${
-                      msg.role === 'user' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900'
-                    }`}>
-                      {msg.role === 'user' ? (
-                        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-                      ) : (
-                        <div className="prose prose-sm max-w-none">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                            {msg.content}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => copyMessage(msg.content, msg.id)} className={`p-1 rounded hover:bg-opacity-20 hover:bg-gray-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} title="Copy">
-                          {copiedId === msg.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        </button>
-                        <button onClick={() => deleteMessage(msg.id)} className={`p-1 rounded hover:bg-opacity-20 hover:bg-red-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} title="Delete">
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {streamingMessage && (
-                <div className="flex justify-start">
-                  <div className="flex space-x-3 max-w-3xl">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                      <Bot className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 p-4 rounded-lg bg-gray-100 shadow-sm">
-                      <div className="prose prose-sm max-w-none">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                          {streamingMessage}
-                        </ReactMarkdown>
-                      </div>
-                      <div className="inline-block w-2 h-4 bg-gray-600 animate-pulse ml-1"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {loading && !streamingMessage && (
-                <div className="flex justify-start">
-                  <div className="flex space-x-3 max-w-3xl">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center animate-pulse">
-                      <Bot className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 p-4 rounded-lg bg-gray-100 shadow-sm">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
-                        </div>
-                        <span className="text-sm text-gray-600 font-medium">
-                          <span className="font-bold">AI</span> thinking...
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-          
-          <div ref={messagesEndRef} />
+            ))}
+          </div>
         </div>
 
-        <div className="border-t p-4 bg-gray-50">
-          <div className="flex space-x-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about data quality, anomalies, or data science..."
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              disabled={loading}
-              autoFocus
-            />
-            <button
-              onClick={sendMessageWithStreaming}
-              disabled={loading || !input.trim()}
-              className="btn btn-primary px-6 flex items-center space-x-2 hover:scale-105 transition-transform disabled:hover:scale-100"
-            >
-              <Send className="w-4 h-4" />
-              <span>Send</span>
-            </button>
+        {/* Chat area */}
+        <div className="flex-1 bg-white rounded-lg shadow-md flex flex-col">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-300">
+            {messages.length === 0 && !streamingMessage ? (
+              <div className="h-full flex items-center justify-center text-gray-400">
+                <div className="text-center">
+                  <Bot className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg">Start a conversation with {currentModel}</p>
+                  <p className="text-sm mt-2">Ask anything about data quality or data science</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group`}
+                  >
+                    <div className={`flex space-x-3 max-w-3xl ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                        msg.role === 'user' ? 'bg-primary-600' : 'bg-gray-600'
+                      }`}>
+                        {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+                      </div>
+                      
+                      <div className={`flex-1 p-4 rounded-lg shadow-sm ${
+                        msg.role === 'user' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900'
+                      }`}>
+                        {msg.role === 'user' ? (
+                          <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                        ) : (
+                          <div className="prose prose-sm max-w-none">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                              {msg.content}
+                            </ReactMarkdown>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => copyMessage(msg.content, msg.id)} className={`p-1 rounded hover:bg-opacity-20 hover:bg-gray-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} title="Copy">
+                            {copiedId === msg.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                          <button onClick={() => deleteMessage(msg.id)} className={`p-1 rounded hover:bg-opacity-20 hover:bg-red-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} title="Delete">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {streamingMessage && (
+                  <div className="flex justify-start">
+                    <div className="flex space-x-3 max-w-3xl">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                        <Bot className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 p-4 rounded-lg bg-gray-100 shadow-sm">
+                        <div className="prose prose-sm max-w-none">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                            {streamingMessage}
+                          </ReactMarkdown>
+                        </div>
+                        <div className="inline-block w-2 h-4 bg-gray-600 animate-pulse ml-1"></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {loading && !streamingMessage && (
+                  <div className="flex justify-start">
+                    <div className="flex space-x-3 max-w-3xl">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center animate-pulse">
+                        <Bot className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 p-4 rounded-lg bg-gray-100 shadow-sm">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                          </div>
+                          <span className="text-sm text-gray-600 font-medium">
+                            <span className="font-bold">AI</span> thinking...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            
+            <div ref={messagesEndRef} />
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Press Enter to send, Shift+Enter for new line
-          </p>
+
+          <div className="border-t p-4 bg-gray-50">
+            <div className="flex space-x-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask about data quality, anomalies, or data science..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                disabled={loading}
+                autoFocus
+              />
+              <button
+                onClick={sendMessageWithStreaming}
+                disabled={loading || !input.trim()}
+                className="btn btn-primary px-6 flex items-center space-x-2 hover:scale-105 transition-transform disabled:hover:scale-100"
+              >
+                <Send className="w-4 h-4" />
+                <span>Send</span>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Press Enter to send, Shift+Enter for new line
+            </p>
+          </div>
         </div>
       </div>
     </div>

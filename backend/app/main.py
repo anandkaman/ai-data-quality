@@ -10,6 +10,7 @@ from app.core.database import engine, Base
 from app.api.v1.routes import upload, assessment, anomaly, recommendations, auth, chat, ai_dashboard
 from app.services.cleanup_service import CleanupService
 from app.api.v1.routes import upload, assessment, anomaly, recommendations, auth, chat, ai_dashboard, admin
+from app.api.v1.routes import upload, assessment, anomaly, recommendations, auth, chat, ai_dashboard, admin, models
 
 # Configure logging
 logging.basicConfig(
@@ -92,6 +93,7 @@ app.include_router(recommendations.router, prefix=f"{settings.API_V1_STR}/recomm
 app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["chat"])
 app.include_router(ai_dashboard.router, prefix=f"{settings.API_V1_STR}/ai-dashboard", tags=["ai-dashboard"])
 app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
+app.include_router(models.router, prefix=f"{settings.API_V1_STR}/models", tags=["models"])
 
 @app.get("/")
 def read_root():

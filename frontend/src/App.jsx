@@ -106,12 +106,6 @@ const AppContent = ({ activeTab, setActiveTab, onLogout }) => {
         return (
           <div className="space-y-6">
             {/* Chat Interface First */}
-            <div className="card">
-              <h2 className="text-xl font-semibold mb-2">Chat with Gemma 2:2b</h2>
-              <p className="text-gray-600 mb-4">
-                Ask questions about data quality, data science, or get help with your analysis
-              </p>
-            </div>
             <ChatInterface />
             
             {/* Welcome Card Below */}
@@ -137,7 +131,7 @@ const AppContent = ({ activeTab, setActiveTab, onLogout }) => {
                 <div className="p-4 bg-green-50 rounded-lg">
                   <h3 className="font-semibold text-green-900 mb-2">AI Recommendations</h3>
                   <p className="text-sm text-green-700">
-                    Get actionable cleaning strategies powered by Gemma 2:2b
+                    Get actionable cleaning strategies powered by AI 
                   </p>
                 </div>
               </div>
