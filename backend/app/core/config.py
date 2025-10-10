@@ -1,32 +1,45 @@
-from pydantic_settings import BaseSettings
-from typing import Optional
-import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    # API Settings
-    API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "AI Data Quality Guardian"
-    
-    # Database Settings (SQLite for local development)
+    # Database
     DATABASE_URL: str = "sqlite:///./data_quality.db"
     
-    # Ollama Settings
+    # Security
+    SECRET_KEY: str = "your-secret-key-here-change-in-production"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
+    ALGORITHM: str = "HS256"
+    
+    # API
+    API_V1_STR: str = "/api/v1"
+    PROJECT_NAME: str = "AI Data Quality Guardian"
+    DEBUG: bool = False
+    
+    # CORS
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    
+    # File Upload
+    UPLOAD_DIR: str = "uploads"
+    MAX_UPLOAD_SIZE: int = 104857600  # 100MB
+    ALLOWED_EXTENSIONS: str = "csv,xlsx,xls"
+    
+    # Ollama/LLM
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "gemma2:2b"
+    OLLAMA_TIMEOUT: int = 1000  # in seconds
     
-    # ChromaDB Settings
-    CHROMA_PERSIST_DIR: str = "./chroma_db"
+    # Cleanup
+    CLEANUP_DAYS: int = 1
+    CLEANUP_EMPTY_CHATS_DAYS: int = 7
     
-    # File Upload Settings
-    UPLOAD_DIR: str = "./uploads"
-    MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024  # 100MB
+    # Logging
+    LOG_LEVEL: str = "INFO"
     
-    # ML Settings
-    ANOMALY_CONTAMINATION: float = 0.1
-    RANDOM_STATE: int = 42
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    # Pydantic v2 configuration
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
+        case_sensitive=False
+    )
 
 settings = Settings()

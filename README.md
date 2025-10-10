@@ -220,25 +220,14 @@ FastAPI provides automatic interactive documentation:
 # ======================
 # DATABASE Configuration
 # ======================
-# For Development (SQLite - already working by default)
 DATABASE_URL=sqlite:///./data_quality.db
-
-# For Production (PostgreSQL - uncomment when deploying)
-# DATABASE_URL=postgresql://username:password@localhost:5432/ai_data_quality
-
 
 # ======================
 # SECURITY Configuration
 # ======================
-# Generate a secure secret key: python -c "import secrets; print(secrets.token_urlsafe(32))"
-SECRET_KEY=your-super-secret-key-change-this-in-production-make-it-very-long-and-random
-
-# JWT Token expiration (minutes)
+SECRET_KEY=  # Change this to a strong random value in production
 ACCESS_TOKEN_EXPIRE_MINUTES=10080
-
-# Password hashing algorithm
-ALGORITHM="" #change this.
-
+ALGORITHM=HS256
 
 # ======================
 # API Configuration
@@ -247,13 +236,10 @@ API_V1_STR=/api/v1
 PROJECT_NAME=AI Data Quality Guardian
 DEBUG=True
 
-
 # ======================
 # CORS Configuration
 # ======================
-# Comma-separated list of allowed origins
 ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-
 
 # ======================
 # FILE UPLOAD Configuration
@@ -262,32 +248,24 @@ UPLOAD_DIR=uploads
 MAX_UPLOAD_SIZE=104857600
 ALLOWED_EXTENSIONS=csv,xlsx,xls
 
-
 # ======================
-# OLLAMA/LLM Configuration
+# OLLAMA/LLM Configuration "if you use switch or change the model make sure to keep 'OLLAMA_MODEL' empty.
 # ======================
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=gemma2:2b
-OLLAMA_TIMEOUT=120
-
+OLLAMA_TIMEOUT=1000
 
 # ======================
 # CLEANUP Configuration
 # ======================
-# Delete datasets older than X days
 CLEANUP_DAYS=1
-# Delete empty chats older than X days
 CLEANUP_EMPTY_CHATS_DAYS=7
-
 
 # ======================
 # LOGGING Configuration
 # ======================
 LOG_LEVEL=INFO
-# Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
-
-# save it as .env
 
 # Generate a Secure SECRET_KEY
 ```bash
@@ -375,16 +353,16 @@ Project Link: [https://github.com/anandkaman/ai-data-guardian](https://github.co
 ## Screenshots
 
 ### Quality Assessment Dashboard
-![Quality Assessment](screenshots/quality-assessment.png)
+![Quality Assessment](docs/quality-assessment.png)
 
 ### Anomaly Detection
-![Anomaly Detection](screenshots/anomaly-detection.png)
+![Anomaly Detection](docs/anomaly-detection.png)
 
 ### AI Dashboard Generator
-![AI Dashboard](screenshots/ai-dashboard.png)
+![AI Dashboard](docs/ai-dashboard.png)
 
 ### Chat Interface
-![Chat](screenshots/chat-interface.png)
+![Chat](docs/chat-interface.png)
 
 
 ### Admin Cleanup
@@ -400,4 +378,9 @@ curl -X POST http://localhost:8000/api/v1/admin/cleanup/datasets?days_old=1
 
 # Test empty chats cleanup
 curl -X POST http://localhost:8000/api/v1/admin/cleanup/empty-chats?days_old=7
+```
+## User to model inference 
+```bash
+User → Frontend (React) → Backend (FastAPI) → Database → Ollama → Model
+      ↑ Multiple layers + conversation context + database queries
 ```
