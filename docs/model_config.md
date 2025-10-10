@@ -442,7 +442,8 @@ OLLAMA_TIMEOUT=300
 ollama list
 
 # Restart Ollama
-# Windows: Restart Ollama app
+# Windows: 
+Restart Ollama app
 # Linux/Mac:
 sudo systemctl restart ollama
 ```
@@ -548,5 +549,5 @@ curl -X POST http://localhost:8000/api/v1/chat \
 ```
 
 **Monitor response time and quality, then adjust settings accordingly.**
-```
+
 

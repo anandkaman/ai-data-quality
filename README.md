@@ -353,16 +353,16 @@ Project Link: [https://github.com/anandkaman/ai-data-guardian](https://github.co
 ## Screenshots
 
 ### Quality Assessment Dashboard
-![Quality Assessment](docs/quality-assessment.png)
+![Quality Assessment](backend/screenshots/quality-assessment.png)
 
 ### Anomaly Detection
-![Anomaly Detection](docs/anomaly-detection.png)
+![Anomaly Detection](backend/screenshots/anomaly-detection.png)
 
 ### AI Dashboard Generator
-![AI Dashboard](docs/ai-dashboard.png)
+![AI Dashboard](backend/screenshots/ai-dashboard.png)
 
 ### Chat Interface
-![Chat](docs/chat-interface.png)
+![Chat](backend/screenshots/chat-interface.png)
 
 
 ### Admin Cleanup
