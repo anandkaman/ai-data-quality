@@ -815,5 +815,5 @@ MIT License - Build upon this foundation freely.
   <p><strong>— Alan Kay</strong></p>
 </blockquote>
 
-### "Contact":
+### Contact :
 > ***"kamananand98@gmail.com"*** — **anandkaman**
