@@ -85,7 +85,7 @@ recommendation = llm.generate(
 
 ---
 
-### 2. The Sensory Organs (Data Ingestion) 
+### 2. Data Ingestion (The Sensory Organs) 
 
 **Component:** Upload Module + Data Preview
 
@@ -340,7 +340,7 @@ AI generates: "Processed refund, created ticket #12345"
 
 ---
 
-## How to Replicate This Pattern 🔨
+## How to Replicate This Pattern 
 
 ### Step 1: Define Your Domain
 
@@ -809,6 +809,6 @@ MIT License - Build upon this foundation freely.
 ---
 
 **Built with ❤️ as a demonstration of AI-orchestrated architecture.**
-
+```markdown
 *"The best way to predict the future is to invent it."* — Alan Kay
 ```
