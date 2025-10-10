@@ -65,20 +65,18 @@ User → UI → Business Logic → Database
 
 **Location:** `backend/app/services/llm_engine/`
 
+```
 # The brain decides what to do
-```
 user_query = "What's wrong with my data?"
-```
+
 # Brain analyzes context
-```
 context = {
     'quality_score': 75,
     'missing_values': 15%,
     'anomalies': 52
 }
-```
+
 # Brain generates recommendation
-```
 recommendation = llm.generate(
     prompt=f"Given {context}, what should user do?",
     system_prompt="You are a data quality expert"
