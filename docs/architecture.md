@@ -34,13 +34,13 @@ AI Data Quality Guardian is a **microservices-inspired monolithic application** 
                      │         │ (Gemma 2:2b)│         │
                      │         └─────────────┘         │
                      │                                 │
-                  └─────────────────┬───────────────┘
-                                    │
-                             ┌──────▼──────┐
-                             │  PostgreSQL │
-                             │  / SQLite   │
-                             │  Database   │
-                             └─────────────┘
+                     └─────────────────┬───────────────┘
+                                       │
+                                ┌──────▼──────┐
+                                │  PostgreSQL │
+                                │  / SQLite   │
+                                │  Database   │
+                                └─────────────┘
 ```
 
 ---
