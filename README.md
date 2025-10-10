@@ -120,52 +120,140 @@ ollama list
 ## Project Structure
 
 ```bash
-ai-data-quality-guardian/
+ai-data-quality/
+│
 ├── backend/
-│ ├── app/
-│ │ ├── api/
-│ │ │ └── v1/
-│ │ │ └── routes/
-│ │ │ ├── auth.py
-│ │ │ ├── upload.py
-│ │ │ ├── assessment.py
-│ │ │ ├── anomaly.py
-│ │ │ ├── recommendations.py
-│ │ │ ├── chat.py
-│ │ │ └── ai_dashboard.py
-│ │ ├── core/
-│ │ │ ├── config.py
-│ │ │ ├── database.py
-│ │ │ └── security.py
-│ │ ├── models/
-│ │ │ ├── database_models.py
-│ │ │ └── schemas.py
-│ │ ├── services/
-│ │ │ ├── quality_engine/
-│ │ │ ├── anomaly_engine/
-│ │ │ └── llm_engine/
-│ │ └── main.py
-│ ├── uploads/
-│ ├── requirements.txt
-│ └── .env
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── v1/
+│   │   │       └── routes/
+│   │   │           ├── __init__.py
+│   │   │           ├── auth.py                    # JWT authentication
+│   │   │           ├── upload.py                  # Dataset upload & preview
+│   │   │           ├── assessment.py              # Quality assessment
+│   │   │           ├── anomaly.py                 # Anomaly detection
+│   │   │           ├── recommendations.py         # AI recommendations
+│   │   │           ├── chat.py                    # Chat interface with context
+│   │   │           ├── ai_dashboard.py            # AI dashboard generator
+│   │   │           ├── models.py                  # Model management & switching
+│   │   │           └── admin.py                   # Admin cleanup operations
+│   │   │
+│   │   ├── core/
+│   │   │   ├── __init__.py
+│   │   │   ├── config.py                          # Settings & environment vars
+│   │   │   ├── database.py                        # Database connection
+│   │   │   └── security.py                        # Password hashing & JWT
+│   │   │
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   ├── database_models.py                 # SQLAlchemy models
+│   │   │   └── schemas.py                         # Pydantic schemas
+│   │   │
+│   │   ├── services/
+│   │   │   ├── quality_engine/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── completeness.py                # Missing value analysis
+│   │   │   │   ├── consistency.py                 # Data type consistency
+│   │   │   │   ├── accuracy.py                    # Range validation
+│   │   │   │   └── uniqueness.py                  # Duplicate detection
+│   │   │   │
+│   │   │   ├── anomaly_engine/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── isolation_forest.py            # Isolation Forest detector
+│   │   │   │   ├── lof.py                         # Local Outlier Factor
+│   │   │   │   ├── one_class_svm.py               # One-Class SVM
+│   │   │   │   └── ensemble.py                    # Ensemble detector
+│   │   │   │
+│   │   │   ├── llm_engine/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── ollama_client.py               # LLM client abstraction
+│   │   │   │   └── model_manager.py               # Model switching & pulling
+│   │   │   │
+│   │   │   └── cleanup_service.py                 # Auto cleanup old files/chats
+│   │   │
+│   │   └── main.py                                # FastAPI app entry point
+│   │
+│   ├── uploads/                                   # Uploaded datasets
+│   │   └── .gitkeep
+│   │
+│   ├── models/                                    # Ollama model storage
+│   │   └── .gitkeep
+│   │
+│   ├── requirements.txt                           # Python dependencies
+│   ├── .env                                       # Environment variables
+│   ├── .env.example                               # Environment template
+│   └── data_quality.db                            # SQLite database (dev)
+│
 ├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ │ └── layout/
-│ │ ├── features/
-│ │ │ ├── auth/
-│ │ │ ├── upload/
-│ │ │ ├── dashboard/
-│ │ │ ├── recommendations/
-│ │ │ └── chat/
-│ │ ├── services/
-│ │ ├── store/
-│ │ └── App.jsx
-│ ├── package.json
-│ └── tailwind.config.js
-├── .gitignore
-├── README.md
-└── LICENSE
+│   ├── public/
+│   │   └── .gitkeep
+│   │
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── layout/
+│   │   │       ├── Header.jsx                     # App header
+│   │   │       ├── Sidebar.jsx                    # Navigation sidebar
+│   │   │       └── Layout.jsx                     # Main layout wrapper
+│   │   │
+│   │   ├── features/
+│   │   │   ├── auth/
+│   │   │   │   ├── Login.jsx                      # Login page
+│   │   │   │   └── Register.jsx                   # Registration page
+│   │   │   │
+│   │   │   ├── upload/
+│   │   │   │   └── components/
+│   │   │   │       ├── FileUploader.jsx           # Drag-drop upload
+│   │   │   │       └── DataPreview.jsx            # Dataset preview table
+│   │   │   │
+│   │   │   ├── dashboard/
+│   │   │   │   ├── components/
+│   │   │   │   │   ├── QualityMetricsCard.jsx     # Quality scores display
+│   │   │   │   │   ├── AnomalyVisualization.jsx   # Anomaly charts
+│   │   │   │   │   ├── ProgressTracker.jsx        # Processing progress
+│   │   │   │   │   └── MetricCard.jsx             # Dashboard metric cards
+│   │   │   │   │
+│   │   │   │   └── AIDashboard.jsx                # AI-generated dashboard
+│   │   │   │
+│   │   │   ├── recommendations/
+│   │   │   │   └── components/
+│   │   │   │       └── StrategyList.jsx           # Cleaning recommendations
+│   │   │   │
+│   │   │   └── chat/
+│   │   │       ├── ChatInterface.jsx              # Main chat UI
+│   │   │       └── ModelSwitcher.jsx              # Model selection dropdown
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js                             # Axios API client
+│   │   │
+│   │   ├── store/
+│   │   │   └── useAppStore.js                     # Zustand global state
+│   │   │
+│   │   ├── App.jsx                                # Root component
+│   │   └── main.jsx                               # React entry point
+│   │
+│   ├── screenshots/                               # Project screenshots
+│   │   └── .gitkeep
+│   │
+│   ├── package.json                               # Node dependencies
+│   ├── package-lock.json                          # Lock file
+│   ├── vite.config.js                             # Vite configuration
+│   ├── tailwind.config.js                         # Tailwind CSS config
+│   ├── postcss.config.js                          # PostCSS config
+│   └── index.html                                 # HTML entry point
+│
+├── docs/
+│   ├── api_documentation.md                       # API endpoint docs
+│   ├── architecture.md                            # System architecture
+│   ├── chat_config.md                             # Chat configuration guide
+│   └── model_config.md                            # Model configuration guide
+│
+├── .gitignore                                     # Git ignore patterns
+├── README.md                                      # Project overview
+├── ABOUT.md                                       # Vision & philosophy
+├── CONTRIBUTING.md                                # Contribution guidelines
+├── LICENSE                                        # MIT License
+└── .git/                                          # Git repository
+
 ```
 
 ## Usage

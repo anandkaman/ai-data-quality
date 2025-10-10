@@ -17,6 +17,7 @@ const ChatInterface = () => {
   const [editingName, setEditingName] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [currentModel, setCurrentModel] = useState('gemma2:2b');
+  const [deletingMessageId, setDeletingMessageId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -134,8 +135,35 @@ const ChatInterface = () => {
   };
 
   const deleteMessage = async (messageId) => {
-    if (window.confirm('Delete this message?')) {
+    if (!window.confirm('Delete this message? This action cannot be undone.')) {
+      return;
+    }
+    
+    setDeletingMessageId(messageId);
+    
+    try {
+      // Call backend to delete from database
+      await axios.delete(
+        `${API_BASE}/messages/${messageId}`,
+        { headers: getHeaders() }
+      );
+      
+      // Update local state after successful deletion
       setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      
+      console.log('Message deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      
+      if (error.response?.status === 404) {
+        alert('Message not found. It may have been already deleted.');
+        // Still remove from UI
+        setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      } else {
+        alert('Failed to delete message. Please try again.');
+      }
+    } finally {
+      setDeletingMessageId(null);
     }
   };
 
@@ -265,7 +293,7 @@ const ChatInterface = () => {
 
   if (initializing) {
     return (
-      <div className="flex h-[calc(100vh-16rem)] items-center justify-center bg-white rounded-lg shadow-md">
+      <div className="flex h-[calc(100vh-12rem)] items-center justify-center bg-white rounded-lg shadow-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Initializing chat...</p>
@@ -376,7 +404,9 @@ const ChatInterface = () => {
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group`}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group ${
+                      deletingMessageId === msg.id ? 'opacity-50' : ''
+                    }`}
                   >
                     <div className={`flex space-x-3 max-w-3xl ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
                       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
@@ -399,11 +429,25 @@ const ChatInterface = () => {
                         )}
                         
                         <div className="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => copyMessage(msg.content, msg.id)} className={`p-1 rounded hover:bg-opacity-20 hover:bg-gray-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} title="Copy">
+                          <button 
+                            onClick={() => copyMessage(msg.content, msg.id)} 
+                            className={`p-1 rounded hover:bg-opacity-20 hover:bg-gray-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} 
+                            title="Copy"
+                            disabled={deletingMessageId === msg.id}
+                          >
                             {copiedId === msg.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                           </button>
-                          <button onClick={() => deleteMessage(msg.id)} className={`p-1 rounded hover:bg-opacity-20 hover:bg-red-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} title="Delete">
-                            <Trash2 className="w-3 h-3" />
+                          <button 
+                            onClick={() => deleteMessage(msg.id)} 
+                            className={`p-1 rounded hover:bg-opacity-20 hover:bg-red-500 ${msg.role === 'user' ? 'text-white' : 'text-gray-600'}`} 
+                            title="Delete"
+                            disabled={deletingMessageId === msg.id}
+                          >
+                            {deletingMessageId === msg.id ? (
+                              <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3 h-3" />
+                            )}
                           </button>
                         </div>
                       </div>

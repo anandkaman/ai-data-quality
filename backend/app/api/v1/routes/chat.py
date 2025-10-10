@@ -219,3 +219,27 @@ async def rename_chat_session(session_id: int, name: str, db: Session = Depends(
         db.rollback()
         logger.error(f"Failed to rename chat session {session_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to rename chat session: {str(e)}")
+
+@router.delete("/messages/{message_id}")
+async def delete_message(message_id: int, db: Session = Depends(get_db)):
+    """Delete a specific message"""
+    
+    message = db.query(ChatMessage).filter(ChatMessage.id == message_id).first()
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    try:
+        db.delete(message)
+        db.commit()
+        
+        logger.info(f"Deleted message {message_id}")
+        
+        return {
+            "message": "Message deleted successfully",
+            "message_id": message_id
+        }
+    
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to delete message {message_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete message: {str(e)}")
