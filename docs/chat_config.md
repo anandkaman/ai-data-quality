@@ -374,19 +374,19 @@ async def export_chat(session_id: int, db: Session = Depends(get_db)):
 ```
 # Troubleshooting
 * Issue: Slow responses
-* Solution: Reduce context window and max tokens
+- Solution: Reduce context window and max tokens
 
 * Issue: Model doesn't remember
-* Solution: Increase context window limit
+- Solution: Increase context window limit
  
 * Issue: Inconsistent answers
-* Solution: Lower temperature (0.3-0.5)
+- Solution: Lower temperature (0.3-0.5)
 
 * Issue: Boring responses
-* Solution: Increase temperature (0.8-0.9)
+- Solution: Increase temperature (0.8-0.9)
 
 * Issue: Chat sessions not isolated
-* Solution: Check chat_session_id is being passed correctly
+- Solution: Check chat_session_id is being passed correctly
 
 
 ---
