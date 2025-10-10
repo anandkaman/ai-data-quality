@@ -9,38 +9,38 @@ AI Data Quality Guardian is a **microservices-inspired monolithic application** 
 ## High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                         Frontend Layer                       │
-│  (React 18 + Tailwind CSS + Zustand + React Query)         │
-└────────────────────────┬────────────────────────────────────┘
-                         │ HTTP/REST
-                         │ JSON
-┌────────────────────────▼────────────────────────────────────┐
-│                      API Gateway Layer                       │
-│              (FastAPI + CORS + Authentication)              │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-        ┌────────────────┼────────────────┐
-        │                │                │
-┌───────▼──────┐  ┌──────▼──────┐  ┌────▼─────────┐
-│   Business   │  │   AI/LLM    │  │   Data       │
-│   Logic      │  │   Services  │  │   Layer      │
-│   Layer      │  │             │  │              │
-└───────┬──────┘  └──────┬──────┘  └────┬─────────┘
-        │                │                │
-        │         ┌──────▼──────┐         │
-        │         │   Ollama    │         │
-        │         │   Server    │         │
-        │         │ (Gemma 2:2b)│         │
-        │         └─────────────┘         │
-        │                                 │
-        └─────────────────┬───────────────┘
-                          │
-                   ┌──────▼──────┐
-                   │  PostgreSQL │
-                   │  / SQLite   │
-                   │  Database   │
-                   └─────────────┘
+             ┌─────────────────────────────────────────────────────────────┐
+             │                         Frontend Layer                      │
+             │  (React 18 + Tailwind CSS + Zustand + React Query)          │
+             └────────────────────────┬────────────────────────────────────┘
+                                      │ HTTP/REST
+                                      │ JSON
+             ┌────────────────────────▼────────────────────────────────────┐
+             │                      API Gateway Layer                      │
+             │              (FastAPI + CORS + Authentication)              │
+             └────────────────────────┬────────────────────────────────────┘
+                                      │
+                     ┌────────────────┼────────────────┐
+                     │                │                │
+             ┌───────▼──────┐  ┌──────▼──────┐  ┌────▼─────────┐
+             │   Business   │  │   AI/LLM    │  │   Data       │
+             │   Logic      │  │   Services  │  │   Layer      │
+             │   Layer      │  │             │  │              │
+             └───────┬──────┘  └──────┬──────┘  └────┬─────────┘
+                     │                │                │
+                     │         ┌──────▼──────┐         │
+                     │         │   Ollama    │         │
+                     │         │   Server    │         │
+                     │         │ (Gemma 2:2b)│         │
+                     │         └─────────────┘         │
+                     │                                 │
+                  └─────────────────┬───────────────┘
+                                    │
+                             ┌──────▼──────┐
+                             │  PostgreSQL │
+                             │  / SQLite   │
+                             │  Database   │
+                             └─────────────┘
 ```
 
 ---
@@ -268,36 +268,36 @@ CREATE INDEX idx_chat_messages_timestamp ON chat_messages(created_at);
 
 ```
 ┌──────────────────────────────────────────────────┐
-│              Application Layer                    │
+│              Application Layer                   │
 │  (chat.py, recommendations.py, ai_dashboard.py)  │
 └──────────────────┬───────────────────────────────┘
                    │
                    ▼
 ┌──────────────────────────────────────────────────┐
-│           LLM Abstraction Layer                   │
-│            (ollama_client.py)                     │
-│  -  Request formatting                             │
-│  -  Response parsing                               │
-│  -  Error handling                                 │
-│  -  Timeout management                             │
+│           LLM Abstraction Layer                  │
+│            (ollama_client.py)                    │
+│  -  Request formatting                           │
+│  -  Response parsing                             │
+│  -  Error handling                               │
+│  -  Timeout management                           │
 └──────────────────┬───────────────────────────────┘
                    │ HTTP/JSON
                    ▼
 ┌──────────────────────────────────────────────────┐
-│              Ollama Server                        │
-│          (localhost:11434)                        │
-│  -  Model management                               │
-│  -  GPU/CPU orchestration                          │
-│  -  Context window handling                        │
+│              Ollama Server                       │
+│          (localhost:11434)                       │
+│  -  Model management                             │
+│  -  GPU/CPU orchestration                        │
+│  -  Context window handling                      │
 └──────────────────┬───────────────────────────────┘
                    │
                    ▼
 ┌──────────────────────────────────────────────────┐
-│              LLM Model                            │
-│            (Gemma 2:2b)                           │
-│  -  Text generation                                │
-│  -  Context understanding                          │
-│  -  Response generation                            │
+│              LLM Model                           │
+│            (Gemma 2:2b)                          │
+│  -  Text generation                              │
+│  -  Context understanding                        │
+│  -  Response generation                          │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -362,7 +362,7 @@ class OllamaClient:
 ```
 ┌─────────────────────────────────────────┐
 │      Quality Assessment Orchestrator    │
-│         (assessment.py)                  │
+│         (assessment.py)                 │
 └──────────┬──────────────────────────────┘
            │
            ├──────────────────────────────┐
@@ -371,12 +371,12 @@ class OllamaClient:
     │ Completeness │            │  Consistency    │
     │   Analyzer   │            │   Checker       │
     └──────┬───────┘            └────────┬────────┘
-           │                              │
+           │                             │
     ┌──────▼───────┐            ┌────────▼────────┐
     │   Accuracy   │            │  Uniqueness     │
     │  Validator   │            │   Scorer        │
     └──────┬───────┘            └────────┬────────┘
-           │                              │
+           │                             │
            └────────────┬─────────────────┘
                         │
                 ┌───────▼────────┐
@@ -441,20 +441,20 @@ class QualityAssessmentEngine:
                         │
                 ┌───────┴────────┐
                 │  Preprocessing │
-                │  -  Scaling     │
-                │  -  Encoding    │
+                │  -  Scaling    │
+                │  -  Encoding   │
                 └───────┬────────┘
                         │
         ┌───────────────┼───────────────┐
         │               │               │
 ┌───────▼────────┐ ┌───▼────────┐ ┌───▼──────────┐
-│ Isolation      │ │ Local      │ │ One-Class   │
-│ Forest         │ │ Outlier    │ │ SVM         │
-│                │ │ Factor     │ │             │
-│ Predictions    │ │ Predictions│ │ Predictions │
-└───────┬────────┘ └───┬────────┘ └───┬──────────┘
-        │               │               │
-        └───────────────┼───────────────┘
+│ Isolation      │ │ Local      │ │ One-Class    │
+│ Forest         │ │ Outlier    │ │ SVM          │
+│                │ │ Factor     │ │              │
+│ Predictions    │ │ Predictions│ │ Predictions  │
+└───────┬────────┘ └────┬───────┘ └──────┬───────┘
+        │               │                │
+        └───────────────┼────────────────┘
                         │
                 ┌───────▼────────┐
                 │ Voting         │
@@ -674,7 +674,7 @@ WHERE upload_timestamp < NOW() - INTERVAL '1 day';
 ```
 ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
 │   React     │     │   FastAPI    │     │   Ollama     │
-│ localhost:  │────▶│ localhost:   │────▶│ localhost:   │
+│ localhost:  │────▶│ localhost:   │────▶│ localhost:  │
 │   5173      │     │   8000       │     │   11434      │
 └─────────────┘     └──────────────┘     └──────────────┘
                             │
