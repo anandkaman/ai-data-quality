@@ -377,7 +377,7 @@ class OllamaClient:
     │  Validator   │            │   Scorer        │
     └──────┬───────┘            └────────┬────────┘
            │                             │
-           └────────────┬─────────────────┘
+           └────────────┬────────────────┘
                         │
                 ┌───────▼────────┐
                 │  Score         │
@@ -447,7 +447,7 @@ class QualityAssessmentEngine:
                         │
         ┌───────────────┼───────────────┐
         │               │               │
-┌───────▼────────┐ ┌───▼────────┐ ┌───▼──────────┐
+┌───────▼────────┐ ┌────▼───────┐ ┌─────▼────────┐
 │ Isolation      │ │ Local      │ │ One-Class    │
 │ Forest         │ │ Outlier    │ │ SVM          │
 │                │ │ Factor     │ │              │
@@ -870,7 +870,5 @@ This architecture is designed for:
 -  **Performance**: Async operations, caching
 -  **Security**: Industry-standard practices
 
-The "AI as Brain" pattern is implemented through clean abstractions that allow swapping components without affecting the entire system.
-```
 
 ***
