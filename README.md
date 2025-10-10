@@ -216,7 +216,7 @@ FastAPI provides automatic interactive documentation:
 ## Configuration
 
 ### Backend Environment Variables
-
+```bash
 # ======================
 # DATABASE Configuration
 # ======================
@@ -285,6 +285,8 @@ CLEANUP_EMPTY_CHATS_DAYS=7
 # ======================
 LOG_LEVEL=INFO
 # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+```
+
 # save it as .env
 # ======================
 
