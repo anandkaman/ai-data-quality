@@ -2,7 +2,7 @@
 
 ## Project Vision 
 
-AI Data Quality Guardian is more than a data quality tool—it's a **proof-of-concept for modular AI-powered applications** where an LLM acts as the "brain" orchestrating specialized Python modules (the "organs") to accomplish complex tasks.
+AI Data Quality Guardian is more than a data quality tool—it's a **proof-of-concept for modular AI-powered applications** where an LLM acts as the "brain" orchestrating specialized Python modules to accomplish complex tasks.
 ---
 
 ## The Core Philosophy: AI as the Brain 
@@ -65,18 +65,20 @@ User → UI → Business Logic → Database
 
 **Location:** `backend/app/services/llm_engine/`
 
-```
 # The brain decides what to do
+```
 user_query = "What's wrong with my data?"
-
+```
 # Brain analyzes context
+```
 context = {
     'quality_score': 75,
     'missing_values': 15%,
     'anomalies': 52
 }
-
+```
 # Brain generates recommendation
+```
 recommendation = llm.generate(
     prompt=f"Given {context}, what should user do?",
     system_prompt="You are a data quality expert"
