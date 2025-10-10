@@ -26,7 +26,7 @@ Time: ~1-3 seconds (3-10x faster!)
 
 ***
 
-## How to Enable GPU in Ollama (When You Upgrade)
+## How to Enable GPU in Ollama 
 
 ### Step 1: Check GPU Support
 
@@ -107,27 +107,12 @@ nvidia-smi -l 1  # Update every 1 second
 
 ***
 
-## What You CAN Do With Intel UHD (128MB) 
-
-### Option 1: Use Intel OpenVINO (Limited Support)
-
-Intel has OpenVINO for integrated GPUs, but it's **very limited** for LLMs.
-
-**Install OpenVINO:**
-```bash
-pip install openvino openvino-dev
-```
-
-**Convert model to OpenVINO format** (complex, not worth it for 128MB):
-```bash
-# Too complex and won't fit in 128MB anyway
-```
-
-### Option 2: Optimize CPU Performance Instead
+## only for CPU based
+###  Optimize CPU Performance Instead
 
 Since GPU won't help, focus on **CPU optimization**:
 
-**1. Enable Multi-threading in Ollama:**
+**. Enable Multi-threading in Ollama:**
 ```bash
 # Windows PowerShell
 setx OLLAMA_NUM_THREAD 8  # Use all CPU cores
@@ -135,14 +120,14 @@ setx OLLAMA_NUM_THREAD 8  # Use all CPU cores
 # Restart Ollama
 ```
 
-**2. Reduce Model Size:**
+**. Reduce Model Size:**
 ```bash
 # Use heavily quantized model
 ollama pull gemma2:2b-q4_0  # 1GB instead of 1.6GB
 ollama pull tinyllama        # 637MB (even smaller)
 ```
 
-**3. Enable CPU-specific optimizations:**
+**. Enable CPU-specific optimizations:**
 
 Create `ollama-cpu-optimized.bat`:
 ```batch
@@ -162,7 +147,7 @@ ollama serve
 
 ***
 
-## Future: When You Upgrade GPU 
+
 
 ### Budget Options (Good for LLMs):
 
@@ -187,7 +172,7 @@ ollama pull llama3.2:70b-q4  # Even 70B quantized!
 
 ***
 
-## Learning: How GPU Acceleration Works Technically 🎓
+## Learning: How GPU Acceleration Works Technically 
 
 ### Architecture Comparison:
 
@@ -276,7 +261,7 @@ print(f"Speedup: {cpu_time / gpu_time:.2f}x")
 
 ***
 
-## Practical Steps for YOU Right Now 
+## Practical Steps for Low end hardware NO gpu 
 
 ### 1. Optimize Current CPU Setup
 
@@ -354,25 +339,5 @@ while True:
 
 ***
 
-## Summary & Action Plan 
 
-### For Now (With 128MB Intel UHD):
-1.  **Accept CPU-only** - GPU won't help
-2.  **Optimize CPU** - Use all cores
-3.  **Use smaller models** - q4_0 quantization
-4.  **Manage memory** - Clear context regularly
-5.   **Close other apps** - Free more RAM
 
-### When You Upgrade (Future):
-1.  **Get RTX 3060 12GB** - Best value (~$300)
-2.  **Install CUDA** - Enable GPU support
-3.  **Configure Ollama** - Set GPU layers
-4.  **Run larger models** - 7B, 13B parameters
-5.  **Enjoy 5-10x speedup** - Much faster responses!
-
-### Learning Resources:
-- **Ollama GPU Docs:** https://github.com/ollama/ollama/blob/main/docs/gpu.md
-- **CUDA Tutorial:** https://developer.nvidia.com/cuda-zone
-- **GPU Architecture:** https://developer.nvidia.com/blog/
-
-Your Intel UHD is great for display, but not for LLM acceleration. Focus on CPU optimization for now, and save up for a proper GPU upgrade! 🚀
