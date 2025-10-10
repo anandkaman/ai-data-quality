@@ -5,7 +5,7 @@
 ## Project Vision 
 
 AI Data Quality Guardian is more than a data quality tool—it's a **proof-of-concept for modular AI-powered applications** where an LLM acts as the "brain" orchestrating specialized Python modules (the "organs") to accomplish complex tasks.
-
+```
 ---
 
 ## The Core Philosophy: AI as the Brain 
@@ -25,24 +25,24 @@ User → UI → Business Logic → Database
 
 ### Our Architecture: AI-Orchestrated Modules
 ```
-                    ┌─────────────────┐
-                    │   LLM Brain     │
-                    │ Ex:(Gemma 2:2b) │
-                    └────────┬────────┘
-                             │
-            ┌────────────────┼────────────────┐
-            ↓                ↓                ↓
-    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-    │ Quality      │ │ Anomaly      │ │ Recommendation│
-    │ Engine       │ │ Detection    │ │ Generator     │
-    │ (pandas)     │ │ (sklearn)    │ │ (LLM)         │
-    └──────────────┘ └──────────────┘ └──────────────┘
-            ↓                ↓                ↓
-    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-    │ Dashboard    │ │ Visualization│ │ Chat         │
-    │ Generator    │ │ Engine       │ │ Interface    │
-    │ (plotly)     │ │ (plotly)     │ │ (context)    │
-    └──────────────┘ └──────────────┘ └──────────────┘
+                                ┌─────────────────┐
+                                │   LLM Brain     │
+                                │ Ex:(Gemma 2:2b) │
+                                └────────┬────────┘
+                                         │
+                        ┌────────────────┼────────────────┐
+                        ↓                ↓                ↓
+                ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+                │ Quality      │ │ Anomaly      │ │Recommendation│
+                │ Engine       │ │ Detection    │ │ Generator    │
+                │ (pandas)     │ │ (sklearn)    │ │ (LLM)        │
+                └──────────────┘ └──────────────┘ └──────────────┘
+                        ↓                ↓                ↓
+                ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+                │ Dashboard    │ │ Visualization│ │ Chat         │
+                │ Generator    │ │ Engine       │ │ Interface    │
+                │ (plotly)     │ │ (plotly)     │ │ (context)    │
+                └──────────────┘ └──────────────┘ └──────────────┘
 ```
 
 **Advantages:**

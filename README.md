@@ -16,17 +16,17 @@ Analyze completeness, consistency, accuracy, and uniqueness metrics across your 
 ML ensemble models (Isolation Forest, Local Outlier Factor, One-Class SVM) detect outliers and data quality issues automatically.
 
 ###  AI Recommendations
-Get actionable cleaning strategies powered by Gemma 2:2b local LLM for data preprocessing and quality improvement.
+Get actionable cleaning strategies powered by AI local LLM for data preprocessing and quality improvement.
 
 ###  AI Dashboard Generator
-Gemma 2:2b analyzes your dataset and creates interactive dashboards with:
+AI analyzes your dataset and creates interactive dashboards with:
 - Smart metric cards (count, sum, avg, min, max, median)
 - 23+ chart types (histogram, scatter, heatmap, violin, 3D scatter, etc.)
 - Natural language prompts for customization
 - Browser-based PDF export
 
 ###  AI Chat Interface
-Chat with Gemma 2:2b about data quality, data science concepts, and get help with analysis. Features:
+Chat with AI about data quality, data science concepts, and get help with analysis. Features:
 - Multiple chat sessions
 - Markdown rendering
 - Message history persistence
@@ -40,7 +40,7 @@ Chat with Gemma 2:2b about data quality, data science concepts, and get help wit
 - **Pandas** - Data manipulation and analysis
 - **Scikit-learn** - ML models for anomaly detection
 - **Plotly** - Interactive visualizations
-- **Ollama + Gemma 2:2b** - Local LLM inference
+- **Ollama + Gemma 2:2b** - Local LLM inference/or you can use other available models
 
 ### Frontend
 - **React 18** - UI library
@@ -188,7 +188,7 @@ ai-data-quality-guardian/
 
 ### 4. Get Recommendations
 - Click "Generate Recommendations"
-- Gemma 2:2b analyzes quality issues
+- AI analyzes quality issues
 - Receive actionable cleaning strategies with code examples
 
 ### 5. Generate AI Dashboard
@@ -325,7 +325,7 @@ Supports 23+ chart types:
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+Please follow these steps:
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/AmazingFeature`)
@@ -339,7 +339,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- **Gemma 2:2b** by Google for local LLM inference
+- **Gemma 2:2b** by Google for local LLM inference 
 - **Ollama** for easy LLM deployment
 - **Plotly** for interactive visualizations
 - **FastAPI** for modern Python web framework
