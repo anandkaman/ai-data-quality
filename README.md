@@ -63,7 +63,7 @@ Chat with Gemma 2:2b about data quality, data science concepts, and get help wit
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/ai-data-quality-guardian.git
+git clone https://github.com/anandkaman/ai-data-quality
 cd ai-data-quality-guardian
 ```
 
@@ -217,28 +217,87 @@ FastAPI provides automatic interactive documentation:
 
 ### Backend Environment Variables
 
-Create `.env` file in `backend/` directory:
-
-Database
+# ======================
+# DATABASE Configuration
+# ======================
+# For Development (SQLite - already working by default)
 DATABASE_URL=sqlite:///./data_quality.db
 
-For PostgreSQL:
-DATABASE_URL=postgresql://user:password@localhost/dbname
-Security
-SECRET_KEY=your-secret-key-change-this-in-production
+# For Production (PostgreSQL - uncomment when deploying)
+# DATABASE_URL=postgresql://username:password@localhost:5432/ai_data_quality
 
-API Settings
+
+# ======================
+# SECURITY Configuration
+# ======================
+# Generate a secure secret key: python -c "import secrets; print(secrets.token_urlsafe(32))"
+SECRET_KEY=your-super-secret-key-change-this-in-production-make-it-very-long-and-random
+
+# JWT Token expiration (minutes)
+ACCESS_TOKEN_EXPIRE_MINUTES=10080
+
+# Password hashing algorithm
+ALGORITHM="" #change this.
+
+
+# ======================
+# API Configuration
+# ======================
 API_V1_STR=/api/v1
 PROJECT_NAME=AI Data Quality Guardian
+DEBUG=True
 
-Upload Settings
+
+# ======================
+# CORS Configuration
+# ======================
+# Comma-separated list of allowed origins
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+
+# ======================
+# FILE UPLOAD Configuration
+# ======================
 UPLOAD_DIR=uploads
-MAX_UPLOAD_SIZE=100000000 # 100MB
+MAX_UPLOAD_SIZE=104857600
+ALLOWED_EXTENSIONS=csv,xlsx,xls
 
-Ollama Settings
+
+# ======================
+# OLLAMA/LLM Configuration
+# ======================
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=gemma2:2b
+OLLAMA_TIMEOUT=120
 
+
+# ======================
+# CLEANUP Configuration
+# ======================
+# Delete datasets older than X days
+CLEANUP_DAYS=1
+# Delete empty chats older than X days
+CLEANUP_EMPTY_CHATS_DAYS=7
+
+
+# ======================
+# LOGGING Configuration
+# ======================
+LOG_LEVEL=INFO
+# Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+# save it as .env
+# ======================
+
+# Generate a Secure SECRET_KEY
+```bash
+#Windows (PowerShell):
+
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+```bash
+#Linux/Mac:
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+```
 
 ## Features in Detail
 
