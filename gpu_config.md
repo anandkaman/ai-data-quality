@@ -107,7 +107,7 @@ nvidia-smi -l 1  # Update every 1 second
 
 ***
 
-## only for CPU based
+## Only for CPU based
 ###  Optimize CPU Performance Instead
 
 Since GPU won't help, focus on **CPU optimization**:
