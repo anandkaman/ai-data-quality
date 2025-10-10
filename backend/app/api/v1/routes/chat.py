@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from sqlalchemy.orm import Session
@@ -7,9 +6,10 @@ from datetime import datetime
 from app.core.database import get_db
 from app.models.database_models import ChatSession, ChatMessage
 from app.services.llm_engine.ollama_client import OllamaClient
-import json
+import logging
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 class ChatMessageSchema(BaseModel):
     role: str
@@ -39,23 +39,32 @@ class ChatHistoryResponse(BaseModel):
 ollama_client = OllamaClient()
 
 @router.post("/sessions/create")
-async def create_empty_session(db: Session = Depends(get_db)):
-    """Create empty chat session instantly"""
-    chat_session = ChatSession(name=f"New Chat")
-    db.add(chat_session)
-    db.commit()
-    db.refresh(chat_session)
+async def create_chat_session(db: Session = Depends(get_db)):
+    """Create a new empty chat session"""
     
-    return {
-        "id": chat_session.id,
-        "name": chat_session.name,
-        "created_at": chat_session.created_at,
-        "updated_at": chat_session.updated_at
-    }
+    try:
+        chat_session = ChatSession(name=f"New Chat")
+        db.add(chat_session)
+        db.commit()
+        db.refresh(chat_session)
+        
+        logger.info(f"Created new chat session: {chat_session.id}")
+        
+        return {
+            "id": chat_session.id,
+            "name": chat_session.name,
+            "created_at": chat_session.created_at.isoformat(),
+            "updated_at": chat_session.updated_at.isoformat()
+        }
+    
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to create chat session: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create chat session: {str(e)}")
 
-@router.post("/stream")
-async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
-    """Stream chat response token by token"""
+@router.post("/", response_model=ChatResponse)
+async def chat_with_gemma(request: ChatRequest, db: Session = Depends(get_db)):
+    """Chat with Gemma 2:2b model and save to database"""
     
     # Get or create chat session
     if request.chat_session_id:
@@ -84,82 +93,10 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
         ChatMessage.chat_session_id == chat_session.id
     ).order_by(ChatMessage.created_at).all()
     
-    conversation = "\n".join([f"{msg.role}: {msg.content}" for msg in messages])
-    
-    system_prompt = request.system_prompt or """You are a helpful AI assistant specializing in data quality, 
-    data science, and analytics. Provide clear, concise, and accurate responses. Use markdown formatting for better readability."""
-    
-    async def generate_stream():
-        full_response = ""
-        
-        try:
-            # Send session ID first
-            yield f"data: {json.dumps({'type': 'session_id', 'session_id': chat_session.id})}\n\n"
-            
-            # Stream response from Ollama
-            result = await ollama_client.generate(
-                prompt=conversation,
-                system_prompt=system_prompt,
-                temperature=0.7,
-                max_tokens=1000
-            )
-            
-            response_text = result.get('response', '')
-            
-            # Simulate streaming by sending chunks
-            chunk_size = 5  # characters per chunk
-            for i in range(0, len(response_text), chunk_size):
-                chunk = response_text[i:i+chunk_size]
-                full_response += chunk
-                yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"
-            
-            # Save AI response
-            ai_message = ChatMessage(
-                chat_session_id=chat_session.id,
-                role="assistant",
-                content=full_response
-            )
-            db.add(ai_message)
-            chat_session.updated_at = datetime.utcnow()
-            db.commit()
-            
-            # Send completion signal
-            yield f"data: {json.dumps({'type': 'done', 'message_id': ai_message.id})}\n\n"
-            
-        except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'error': str(e)})}\n\n"
-    
-    return StreamingResponse(generate_stream(), media_type="text/event-stream")
-
-@router.post("/", response_model=ChatResponse)
-async def chat_with_gemma(request: ChatRequest, db: Session = Depends(get_db)):
-    """Regular chat endpoint (non-streaming)"""
-    
-    if request.chat_session_id:
-        chat_session = db.query(ChatSession).filter(
-            ChatSession.id == request.chat_session_id
-        ).first()
-        if not chat_session:
-            raise HTTPException(status_code=404, detail="Chat session not found")
-    else:
-        chat_session = ChatSession(name=f"Chat {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        db.add(chat_session)
-        db.commit()
-        db.refresh(chat_session)
-    
-    user_message = ChatMessage(
-        chat_session_id=chat_session.id,
-        role="user",
-        content=request.message
-    )
-    db.add(user_message)
-    db.commit()
-    
-    messages = db.query(ChatMessage).filter(
-        ChatMessage.chat_session_id == chat_session.id
-    ).order_by(ChatMessage.created_at).all()
-    
-    conversation = "\n".join([f"{msg.role}: {msg.content}" for msg in messages])
+    # Build conversation context
+    conversation = "\n".join([
+        f"{msg.role}: {msg.content}" for msg in messages
+    ])
     
     system_prompt = request.system_prompt or """You are a helpful AI assistant specializing in data quality, 
     data science, and analytics. Provide clear, concise, and accurate responses. Use markdown formatting for better readability."""
@@ -174,18 +111,25 @@ async def chat_with_gemma(request: ChatRequest, db: Session = Depends(get_db)):
         
         ai_response = result.get('response', 'Sorry, I could not generate a response.')
         
+        # Save AI response
         ai_message = ChatMessage(
             chat_session_id=chat_session.id,
             role="assistant",
             content=ai_response
         )
         db.add(ai_message)
+        
+        # Update session timestamp
         chat_session.updated_at = datetime.utcnow()
         db.commit()
+        
+        logger.info(f"Chat completed for session {chat_session.id}")
         
         return ChatResponse(response=ai_response, chat_session_id=chat_session.id)
     
     except Exception as e:
+        db.rollback()
+        logger.error(f"Chat failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
 
 @router.get("/sessions", response_model=List[ChatSessionResponse])
@@ -205,15 +149,33 @@ async def get_chat_history(session_id: int, db: Session = Depends(get_db)):
 @router.delete("/sessions/{session_id}")
 async def delete_chat_session(session_id: int, db: Session = Depends(get_db)):
     """Delete a chat session and all its messages"""
+    
     session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
     
-    db.query(ChatMessage).filter(ChatMessage.chat_session_id == session_id).delete()
-    db.delete(session)
-    db.commit()
+    try:
+        # Delete all messages first
+        messages_deleted = db.query(ChatMessage).filter(
+            ChatMessage.chat_session_id == session_id
+        ).delete()
+        
+        # Delete session
+        db.delete(session)
+        db.commit()
+        
+        logger.info(f"Deleted chat session {session_id} with {messages_deleted} messages")
+        
+        return {
+            "message": "Chat session deleted successfully",
+            "session_id": session_id,
+            "messages_deleted": messages_deleted
+        }
     
-    return {"message": "Chat session deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to delete chat session {session_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete chat session: {str(e)}")
 
 @router.put("/sessions/{session_id}/rename")
 async def rename_chat_session(session_id: int, name: str, db: Session = Depends(get_db)):
@@ -222,7 +184,16 @@ async def rename_chat_session(session_id: int, name: str, db: Session = Depends(
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
     
-    session.name = name
-    db.commit()
+    try:
+        session.name = name
+        session.updated_at = datetime.utcnow()
+        db.commit()
+        
+        logger.info(f"Renamed chat session {session_id} to '{name}'")
+        
+        return {"message": "Chat session renamed successfully", "name": name}
     
-    return {"message": "Chat session renamed successfully"}
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to rename chat session {session_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to rename chat session: {str(e)}")

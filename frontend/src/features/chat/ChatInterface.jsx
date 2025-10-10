@@ -31,7 +31,7 @@ const ChatInterface = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, streamingMessage, scrollToBottom]);
+  }, [messages, streamingMessage, loading, scrollToBottom]);
 
   useEffect(() => {
     loadChatSessions();
@@ -48,7 +48,6 @@ const ChatInterface = () => {
       const response = await axios.get(`${API_BASE}/sessions`, { headers: getHeaders() });
       
       if (response.data.length === 0) {
-        // Create first empty chat
         await createEmptyChat();
       } else {
         setChats(response.data);
@@ -79,6 +78,7 @@ const ChatInterface = () => {
       
     } catch (error) {
       console.error('Failed to create chat:', error);
+      setInitializing(false);
     }
   };
 
@@ -151,6 +151,7 @@ const ChatInterface = () => {
       setEditingChatId(null);
     } catch (error) {
       console.error('Failed to rename chat:', error);
+      setEditingChatId(null);
     }
   };
 
@@ -162,7 +163,6 @@ const ChatInterface = () => {
     setLoading(true);
     setStreamingMessage('');
 
-    // Add user message optimistically
     const tempUserMessage = {
       id: `temp-${Date.now()}`,
       role: 'user',
@@ -172,85 +172,19 @@ const ChatInterface = () => {
     setMessages(prev => [...prev, tempUserMessage]);
 
     try {
-      const token = localStorage.getItem('token');
-      const eventSource = new EventSource(
-        `${API_BASE}/stream?chat_session_id=${activeChat || ''}&message=${encodeURIComponent(messageText)}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
-
-      let sessionId = activeChat;
-      let accumulatedText = '';
-
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          
-          if (data.type === 'session_id') {
-            sessionId = data.session_id;
-            if (!activeChat) {
-              setActiveChat(sessionId);
-              loadChatSessions();
-            }
-          } else if (data.type === 'chunk') {
-            accumulatedText += data.content;
-            setStreamingMessage(accumulatedText);
-          } else if (data.type === 'done') {
-            // Replace streaming message with actual saved message
-            setStreamingMessage('');
-            loadChatMessages(sessionId);
-            setLoading(false);
-            eventSource.close();
-            
-            setTimeout(() => inputRef.current?.focus(), 100);
-          } else if (data.type === 'error') {
-            console.error('Streaming error:', data.error);
-            setStreamingMessage('');
-            setLoading(false);
-            eventSource.close();
-          }
-        } catch (error) {
-          console.error('Parse error:', error);
-        }
-      };
-
-      eventSource.onerror = (error) => {
-        console.error('EventSource error:', error);
-        setStreamingMessage('');
-        setLoading(false);
-        eventSource.close();
-        
-        // Fallback to regular API
-        sendMessageRegular(messageText, sessionId);
-      };
-
-    } catch (error) {
-      console.error('Streaming failed:', error);
-      setLoading(false);
-      
-      // Fallback to regular API
-      sendMessageRegular(messageText, activeChat);
-    }
-  };
-
-  const sendMessageRegular = async (messageText, sessionId) => {
-    try {
       const response = await axios.post(
         API_BASE,
         {
-          chat_session_id: sessionId,
+          chat_session_id: activeChat,
           message: messageText,
           system_prompt: "You are a helpful AI assistant specializing in data quality and data science. Use markdown formatting."
         },
         { headers: getHeaders() }
       );
 
-      await loadChatMessages(sessionId || response.data.chat_session_id);
+      await loadChatMessages(activeChat || response.data.chat_session_id);
       
-      if (!sessionId) {
+      if (!activeChat) {
         setActiveChat(response.data.chat_session_id);
         await loadChatSessions();
       }
@@ -476,14 +410,19 @@ const ChatInterface = () => {
               {loading && !streamingMessage && (
                 <div className="flex justify-start">
                   <div className="flex space-x-3 max-w-3xl">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center animate-pulse">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1 p-4 rounded-lg bg-gray-100 shadow-sm">
-                      <div className="flex space-x-2">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                        </div>
+                        <span className="text-sm text-gray-600 font-medium">
+                          <span className="font-bold">AI</span> thinking...
+                        </span>
                       </div>
                     </div>
                   </div>
