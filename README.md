@@ -288,7 +288,6 @@ LOG_LEVEL=INFO
 ```
 
 # save it as .env
-# ======================
 
 # Generate a Secure SECRET_KEY
 ```bash
