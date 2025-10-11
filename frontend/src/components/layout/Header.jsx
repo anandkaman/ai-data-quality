@@ -12,7 +12,7 @@ const Header = ({ onLogout }) => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                AI Data Quality Guardian
+                AI Data Quality Asistant 
               </h1>
               <p className="text-sm text-gray-500">
                 Intelligent Data Quality Assessment & Anomaly Detection
