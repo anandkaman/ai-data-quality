@@ -1,4 +1,4 @@
-# AI Data Quality Guardian
+# AI Data Quality Assistant 
 
 An intelligent system for comprehensive data quality assessment, anomaly detection, and automated cleaning recommendations powered by local AI models.
 
